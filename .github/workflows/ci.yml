@@ -100,6 +100,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install flake8 pytest coverage
+          pip install -e .
 
       #- name: Run Flake8
        # run: flake8 .
