@@ -36,3 +36,6 @@ cryptography
 pdfplumber
 pandas
 pypdf
+
+# testing
+pytest-mock

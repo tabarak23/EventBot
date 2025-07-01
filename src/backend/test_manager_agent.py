@@ -4,7 +4,7 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from agents.manager_agent import ManagerAgent
+from backend.agents.manager_agent import ManagerAgent
 
 load_dotenv()
 
