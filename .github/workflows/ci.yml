@@ -108,7 +108,7 @@ jobs:
 
       - name: Run Pytest with Reports
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src/backend
           pytest --junitxml=pytest-report.xml
           coverage run -m pytest
           coverage xml -o coverage.xml
