@@ -1,5 +1,5 @@
 # EventBot
-
+#
 A PDF document assistant with a FastAPI-based backend and a Streamlit-based frontend. The backend integrates with Google Gemini AI, Pinecone vector database, and MySQL. It allows users to upload PDF files (extracting text for vector search and tables for structured data querying) and ask questions about their content using natural language via the frontend interface. Event bot(https://eventbot-pinecone-db.streamlit.app/)
 
 ## 📖 Table of Contents
