@@ -125,5 +125,6 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONAR_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
             -Dsonar.coverageReportPaths=coverage.xml \
             -Dsonar.python.xunit.reportPath=pytest-report.xml
