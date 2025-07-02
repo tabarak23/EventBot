@@ -123,8 +123,8 @@ jobs:
           if [ -f coverage.xml ]; then
             echo "✅ Found coverage.xml. Running SonarScanner with coverage..."
             sonar-scanner \
-              -Dsonar.projectKey=your_project_key \
-              -Dsonar.organization=your_org_key \
+              -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}\
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.sources=. \
@@ -133,8 +133,8 @@ jobs:
             else
               echo "⚠️ coverage.xml not found. Running SonarScanner without coverage..."
               sonar-scanner \
-                -Dsonar.projectKey=your_project_key \
-                -Dsonar.organization=your_org_key \
+                -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+                -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
                 -Dsonar.sources=.
