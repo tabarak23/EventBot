@@ -116,6 +116,8 @@ jobs:
           # pytest --junitxml=pytest-report.xml
           # coverage run -m pytest
           # coverage xml -o coverage.xml
+      - name: setting up sonar
+        uses: warchant/setup-sonar-scanner@v7    
       - name: Run SonarQube Scan
         run: |
           sonar-scanner \
