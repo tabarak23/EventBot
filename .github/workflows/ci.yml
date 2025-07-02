@@ -130,12 +130,12 @@ jobs:
               -Dsonar.sources=. \
               -Dsonar.coverageReportPaths=coverage.xml \
               -Dsonar.python.xunit.reportPath=pytest-report.xml
-            else
-              echo "⚠️ coverage.xml not found. Running SonarScanner without coverage..."
-              sonar-scanner \
-                -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-                -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
-                -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-                -Dsonar.sources=.
-            fi
+          else
+            echo "⚠️ coverage.xml not found. Running SonarScanner without coverage..."
+            sonar-scanner \
+              -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.sources=.
+          fi
