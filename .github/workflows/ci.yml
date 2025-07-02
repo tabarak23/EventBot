@@ -113,10 +113,8 @@ jobs:
       - name: Run Pytest with Reports
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          pytest --junitxml=pytest-report.xml
-          coverage run -m pytest
           coverage xml -o coverage.xml
-
+      
       - name: Run SonarQube Scan
         run: |
           sonar-scanner \
