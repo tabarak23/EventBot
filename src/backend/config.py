@@ -2,7 +2,6 @@
 import pytest
 from unittest.mock import MagicMock
 
-from src.backend.config import Config as RealConfig
 
 
 @pytest.fixture

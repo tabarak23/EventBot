@@ -18,7 +18,7 @@ except ImportError:
 import os
 import json
 from pathlib import Path
-from ..config import config
+from ..config import Config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
