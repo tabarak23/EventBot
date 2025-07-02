@@ -124,7 +124,7 @@ jobs:
             echo "✅ Found coverage.xml. Running SonarScanner with coverage..."
             sonar-scanner \
               -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}\
-              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.sources=. \
@@ -134,7 +134,7 @@ jobs:
             echo "⚠️ coverage.xml not found. Running SonarScanner without coverage..."
             sonar-scanner \
               -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION_KEY }} \
+              -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.sources=.
