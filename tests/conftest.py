@@ -2,12 +2,16 @@
 
 import pytest
 import os
+# Ensure ChatbotAgent is imported here, as it's used in the fixture below.
+from src.backend.agents.rag_agent import ChatbotAgent 
 from unittest.mock import MagicMock
 
 # Import necessary components from your application
-from src.backend import create_app
-from src.backend.agents.rag_agent import ChatbotAgent
-from src.backend.config import Config
+from src.backend import create_app # Assuming this is correct for your Flask/FastAPI app
+
+# Import Config to use as a spec for the mock
+from src.backend.config import Config as RealConfig
+
 
 @pytest.fixture(scope='session', autouse=True)
 def setup_test_env_vars():
@@ -19,15 +23,8 @@ def setup_test_env_vars():
     """
     os.environ['GEMINI_API_KEY'] = 'test_gemini_key'
     os.environ['PINECONE_API_KEY'] = 'test_pinecone_key'
-    os.environ['PINECONE_INDEX'] = 'test-index'
+    os.environ['PINECONE_INDEX'] = 'test-index' # Changed to PINECONE_INDEX as per your config.py (not PINECONE_INDEX_NAME for env var)
     os.environ['FLASK_ENV'] = 'testing'
-    
-    # Reload Config to pick up the test environment variables
-    # This might be needed if Config was loaded before this fixture ran.
-    # In practice, for Flask apps initialized *after* fixtures, this is less critical.
-    # Config.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") 
-    # Config.PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-    # Config.PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX")
     
     # Yield control to tests
     yield
@@ -64,6 +61,7 @@ def app_client(mocker):
     
     # Patch the initialization of ChatbotAgent in __init__.py directly
     # This ensures that `app.chatbot_agent` gets our mock.
+    # Adjust path if your app initialization is different.
     mocker.patch('src.backend.__init__.ChatbotAgent', return_value=mock_chatbot_agent)
 
     app = create_app()
@@ -93,17 +91,53 @@ def mock_chatbot_agent_instance(mocker):
     mocker.patch('langchain.text_splitter.RecursiveCharacterTextSplitter')
     mocker.patch('langchain.prompts.ChatPromptTemplate')
 
-    # Ensure environment variables are set for the agent's __init__ to pass Config validation
-    os.environ['GEMINI_API_KEY'] = 'test_gemini_key'
-    os.environ['PINECONE_API_KEY'] = 'test_pinecone_key'
-    os.environ['PINECONE_INDEX'] = 'test-index'
-
-    agent = ChatbotAgent()
+    # --- CRITICAL CHANGE HERE: Mock the Config class itself ---
+    # Instead of relying on os.environ, we directly control the Config object
+    mock_config_instance = MagicMock(spec=RealConfig)
+    mock_config_instance.PINECONE_API_KEY = 'test_pinecone_key'
+    mock_config_instance.GEMINI_API_KEY = 'test_gemini_key'
+    # Use PINECONE_INDEX_NAME as this is what Config class reads from its attribute
+    mock_config_instance.PINECONE_INDEX_NAME = 'test-index' 
     
-    # Clean up env vars after agent is initialized to prevent side effects in other tests
-    del os.environ['GEMINI_API_KEY']
-    del os.environ['PINECONE_API_KEY']
-    del os.environ['PINECONE_INDEX']
+    # Set other necessary config attributes for the mock
+    mock_config_instance.ALLOWED_EXTENSIONS = ["pdf"]
+    mock_config_instance.MAX_FILE_SIZE = 2 * 1024 * 1024
+    mock_config_instance.HOST = "0.0.0.0"
+    mock_config_instance.PORT = 5000
+    mock_config_instance.DEBUG = False
+    mock_config_instance.ENDPOINT = "http://localhost:5000"
+    mock_config_instance.DATABASE_USER = "test_user"
+    mock_config_instance.DATABASE_PASSWORD = "test_password"
+    mock_config_instance.DATABASE_HOST = "test_host"
+    mock_config_instance.DATABASE_PORT = "3306"
+    mock_config_instance.DATABASE_NAME = "test_db"
+    mock_config_instance.PINECONE_CLOUD = "aws"
+    mock_config_instance.PINECONE_REGION = "us-east-1"
+    mock_config_instance.PINECONE_DIMENSION = 768
+
+    # Mock validation methods to prevent them from raising errors
+    mock_config_instance.validate_pinecone_config.return_value = None
+    mock_config_instance.validate_gemini_config.return_value = None
+    mock_config_instance.validate_database_config.return_value = None
+    mock_config_instance.validate_required_env_vars.return_value = None
+
+    # Mock any properties like database_url
+    mock_config_instance.database_url = "mysql+pymysql://test_user:test_password@test_host:3306/test_db?charset=utf8mb4"
+
+    # Patch the Config class where ChatbotAgent imports it from.
+    # Assuming ChatbotAgent does `from ..config import Config`
+    mocker.patch('src.backend.config.Config', return_value=mock_config_instance)
+    
+    # --- Remove these lines as they are no longer necessary and can cause issues ---
+    # os.environ['GEMINI_API_KEY'] = 'test_gemini_key'
+    # os.environ['PINECONE_API_KEY'] = 'test_pinecone_key'
+    # os.environ['PINECONE_INDEX'] = 'test-index'
+    
+    agent = ChatbotAgent() # This will now get the mocked Config instance
+    
+    # --- Remove these cleanup lines as Config is mocked, not relying on os.environ directly ---
+    # del os.environ['GEMINI_API_KEY']
+    # del os.environ['PINECONE_API_KEY']
+    # del os.environ['PINECONE_INDEX']
 
     yield agent
-
